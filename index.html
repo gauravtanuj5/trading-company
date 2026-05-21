@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanuj Trading Company</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+--brand:#166534;--brand-light:#15803d;--brand-pale:#f0fdf4;--brand-mid:#dcfce7;
+--surface:var(--color-background-primary);--page:var(--color-background-tertiary);
+--border:var(--color-border-tertiary);--border2:var(--color-border-secondary);
+--txt:var(--color-text-primary);--muted:var(--color-text-secondary);--hint:var(--color-text-tertiary);
+--r-sm:var(--border-radius-md);--r-md:var(--border-radius-lg);
+}
+.app{background:var(--page);min-height:640px;font-family:var(--font-sans);}
+
+.topbar{background:#166534;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:34px;height:34px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;}
+.brand-name{color:#fff;font-size:15px;font-weight:500;letter-spacing:.01em;}
+.brand-tag{color:rgba(255,255,255,.6);font-size:11px;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.pill{background:rgba(255,255,255,.12);color:#fff;font-size:11px;padding:5px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;cursor:pointer;}
+.pill:hover{background:rgba(255,255,255,.2);}
+
+.nav{background:var(--surface);border-bottom:0.5px solid var(--border2);display:flex;gap:0;padding:0 16px;}
+.nb{padding:11px 14px;font-size:12px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--muted);white-space:nowrap;border-bottom:2px solid transparent;display:flex;align-items:center;gap:5px;letter-spacing:.01em;}
+.nb.on{color:#166534;border-bottom:2px solid #166534;}
+.nb i{font-size:14px;}
+
+.body{padding:16px;display:flex;flex-direction:column;gap:14px;}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;}
+.kpi{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);padding:14px 14px 12px;}
+.kpi-icon{width:30px;height:30px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:10px;}
+.kpi-icon.g{background:#dcfce7;color:#166534;}
+.kpi-icon.a{background:#fef9c3;color:#854d0e;}
+.kpi-icon.r{background:#fee2e2;color:#991b1b;}
+.kpi-icon.b{background:#dbeafe;color:#1d4ed8;}
+.kpi-val{font-size:20px;font-weight:500;color:var(--txt);line-height:1;}
+.kpi-lbl{font-size:11px;color:var(--muted);margin-top:4px;}
+.kpi-sub{font-size:11px;color:#166534;margin-top:3px;font-weight:500;}
+
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:500px){.row2{grid-template-columns:1fr;}}
+
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);overflow:hidden;}
+.card-head{padding:12px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:12px;font-weight:500;color:var(--txt);display:flex;align-items:center;gap:6px;}
+.card-title i{font-size:14px;color:var(--muted);}
+.card-body{padding:14px;}
+
+table{width:100%;border-collapse:collapse;table-layout:fixed;}
+th{font-size:10px;font-weight:500;color:var(--hint);text-transform:uppercase;letter-spacing:.06em;padding:0 10px 8px;text-align:left;border-bottom:0.5px solid var(--border);}
+td{font-size:12px;color:var(--txt);padding:9px 10px;border-bottom:0.5px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--page);}
+
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:500;}
+.bg{background:#dcfce7;color:#166534;}
+.ba{background:#fef9c3;color:#854d0e;}
+.br{background:#fee2e2;color:#991b1b;}
+.bb{background:#dbeafe;color:#1d4ed8;}
+
+.bar-wrap{height:5px;background:var(--page);border-radius:3px;overflow:hidden;margin-top:3px;}
+.bar-fill{height:100%;background:#166534;border-radius:3px;}
+
+.btn-primary{background:#166534;color:#fff;border:none;padding:7px 14px;border-radius:var(--r-sm);font-size:12px;cursor:pointer;font-weight:500;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.btn-primary:hover{background:#15803d;}
+.btn-ghost{background:none;border:0.5px solid var(--border2);color:var(--muted);padding:7px 12px;border-radius:var(--r-sm);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;}
+.btn-ghost:hover{background:var(--page);}
+.btn-danger{background:#fee2e2;color:#991b1b;border:none;padding:5px 8px;border-radius:var(--r-sm);font-size:11px;cursor:pointer;}
+.btn-wa{background:#16a34a;color:#fff;border:none;padding:8px 16px;border-radius:20px;font-size:12px;cursor:pointer;font-weight:500;display:flex;align-items:center;gap:6px;}
+
+input,select,textarea{padding:7px 10px;border:0.5px solid var(--border2);border-radius:var(--r-sm);font-size:12px;background:var(--surface);color:var(--txt);width:100%;}
+input:focus,select:focus{outline:none;border-color:#166534;}
+.form-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;}
+.form-row>*{flex:1;min-width:100px;}
+.form-row>.btn-primary{flex:none;}
+.lbl{font-size:11px;color:var(--muted);margin-bottom:4px;}
+
+.sec{display:none;flex-direction:column;gap:14px;}
+.sec.on{display:flex;}
+
+.owner-avatar{width:48px;height:48px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:#166534;flex-shrink:0;}
+.contact-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.callbtn{background:#166534;color:#fff;border:none;padding:8px 16px;border-radius:20px;font-size:12px;cursor:pointer;font-weight:500;display:flex;align-items:center;gap:6px;}
+.divider{height:0.5px;background:var(--border);}
+.info-row{display:grid;grid-template-columns:110px 1fr;gap:4px;padding:6px 0;border-bottom:0.5px solid var(--border);}
+.info-row:last-child{border-bottom:none;}
+.info-key{font-size:12px;color:var(--muted);}
+.info-val{font-size:12px;color:var(--txt);font-weight:500;}
+
+.status-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px;}
+.dot-g{background:#16a34a;}.dot-a{background:#d97706;}.dot-r{background:#dc2626;}
+
+.empty{padding:24px;text-align:center;color:var(--hint);font-size:12px;}
+</style>
+
+<h2 class="sr-only">Tanuj Trending Company — vegetable trading management dashboard</h2>
+
+<div class="app">
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-icon"><i class="ti ti-plant" aria-hidden="true"></i></div>
+    <div>
+      <div class="brand-name">Tanuj Trending Company</div>
+      <div class="brand-tag">Wholesale Vegetable Trading</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="pill"><i class="ti ti-phone" aria-hidden="true" style="font-size:12px;"></i>+91 9460473101</div>
+    <div class="pill"><i class="ti ti-phone" aria-hidden="true" style="font-size:12px;"></i>+91 8824789383</div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nb on" onclick="nav(this,'overview')"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Overview</button>
+  <button class="nb" onclick="nav(this,'inventory')"><i class="ti ti-package" aria-hidden="true"></i>Inventory</button>
+  <button class="nb" onclick="nav(this,'dispatch')"><i class="ti ti-truck" aria-hidden="true"></i>Dispatch</button>
+  <button class="nb" onclick="nav(this,'accounts')"><i class="ti ti-receipt" aria-hidden="true"></i>Accounts</button>
+  <button class="nb" onclick="nav(this,'contact')"><i class="ti ti-address-book" aria-hidden="true"></i>Contact</button>
+</div>
+
+<div class="body">
+
+<!-- OVERVIEW -->
+<div class="sec on" id="s-overview">
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-icon g"><i class="ti ti-package" aria-hidden="true"></i></div><div class="kpi-val">48 qt</div><div class="kpi-lbl">Stock Received Today</div><div class="kpi-sub">+12 qt from yesterday</div></div>
+    <div class="kpi"><div class="kpi-icon b"><i class="ti ti-send" aria-hidden="true"></i></div><div class="kpi-val">31 qt</div><div class="kpi-lbl">Dispatched Today</div><div class="kpi-sub">3 deliveries done</div></div>
+    <div class="kpi"><div class="kpi-icon a"><i class="ti ti-stack-2" aria-hidden="true"></i></div><div class="kpi-val">17 qt</div><div class="kpi-lbl">Stock Remaining</div><div class="kpi-sub">In warehouse</div></div>
+    <div class="kpi"><div class="kpi-icon g"><i class="ti ti-currency-rupee" aria-hidden="true"></i></div><div class="kpi-val">₹12,400</div><div class="kpi-lbl">Today's Revenue</div><div class="kpi-sub">Net profit ₹3,200</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i>Weekly Revenue</div>
+      <span style="font-size:11px;color:var(--muted);">This week</span>
+    </div>
+    <div class="card-body" style="padding-bottom:10px;">
+      <div style="position:relative;width:100%;height:160px;"><canvas id="wkChart" role="img" aria-label="Bar chart showing daily revenue this week">Daily revenue Mon to Sun this week.</canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><i class="ti ti-leaf" aria-hidden="true"></i>Top Stock Overview</div>
+    </div>
+    <table>
+      <colgroup><col style="width:32%"><col style="width:18%"><col style="width:18%"><col style="width:32%"></colgroup>
+      <thead><tr><th>Vegetable</th><th>Total</th><th>Sold</th><th>Progress</th></tr></thead>
+      <tbody id="overviewTb"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div class="sec" id="s-inventory">
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><i class="ti ti-package" aria-hidden="true"></i>Inventory Management <span id="vegCount" style="margin-left:6px;color:var(--muted);font-weight:400;"></span></div>
+      <button class="btn-primary" onclick="toggleAddForm()"><i class="ti ti-plus" aria-hidden="true"></i>Add Item</button>
+    </div>
+    <div class="card-body" id="addForm" style="display:none;border-bottom:0.5px solid var(--border);">
+      <div class="form-row">
+        <div><div class="lbl">Vegetable Name</div><input id="nName" placeholder="e.g., Potato"></div>
+        <div><div class="lbl">Total Stock (kg)</div><input id="nTotal" type="number" value="0"></div>
+        <div><div class="lbl">Sold (kg)</div><input id="nSold" type="number" value="0"></div>
+        <div><div class="lbl">Loaded (kg)</div><input id="nLoaded" type="number" value="0"></div>
+        <button class="btn-primary" onclick="addVeg()"><i class="ti ti-check" aria-hidden="true"></i>Add</button>
+      </div>
+    </div>
+    <div class="card-body" style="padding-top:10px;">
+      <input id="vegSearch" type="text" placeholder="Search vegetables..." oninput="renderInv()" style="margin-bottom:10px;">
+    </div>
+    <table>
+      <colgroup><col style="width:20%"><col style="width:13%"><col style="width:13%"><col style="width:13%"><col style="width:13%"><col style="width:18%"><col style="width:10%"></colgroup>
+      <thead><tr><th>Name</th><th>Total</th><th>Sold</th><th>Remaining</th><th>Loaded</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="invBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- DISPATCH -->
+<div class="sec" id="s-dispatch">
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-icon g"><i class="ti ti-arrow-down" aria-hidden="true"></i></div><div class="kpi-val" id="dAaya">0 kg</div><div class="kpi-lbl">Stock Aaya</div></div>
+    <div class="kpi"><div class="kpi-icon b"><i class="ti ti-arrow-up" aria-hidden="true"></i></div><div class="kpi-val" id="dBheja">0 kg</div><div class="kpi-lbl">Bheja</div></div>
+    <div class="kpi"><div class="kpi-icon a"><i class="ti ti-truck-loading" aria-hidden="true"></i></div><div class="kpi-val" id="dLoaded">0 kg</div><div class="kpi-lbl">Loaded</div></div>
+    <div class="kpi"><div class="kpi-icon g"><i class="ti ti-package" aria-hidden="true"></i></div><div class="kpi-val" id="dBacha">0 kg</div><div class="kpi-lbl">Bacha Hua</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><i class="ti ti-truck" aria-hidden="true"></i>Add Dispatch Entry</div>
+    </div>
+    <div class="card-body">
+      <div class="form-row">
+        <div><div class="lbl">Vehicle No.</div><input id="dVehicle" placeholder="RJ-14-1234"></div>
+        <div><div class="lbl">Driver Name</div><input id="dDriver" placeholder="Driver name"></div>
+        <div><div class="lbl">Vegetable</div><input id="dVeg" placeholder="Potato"></div>
+        <div><div class="lbl">Quantity (kg)</div><input id="dQty" type="number" value="0"></div>
+        <div><div class="lbl">Type</div><select id="dType"><option value="in">Stock Aaya</option><option value="out">Bheja</option><option value="load">Loaded</option></select></div>
+        <button class="btn-primary" onclick="addDispatch()"><i class="ti ti-check" aria-hidden="true"></i>Add</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><i class="ti ti-list" aria-hidden="true"></i>Dispatch History</div>
+    </div>
+    <table>
+      <colgroup><col style="width:15%"><col style="width:20%"><col style="width:15%"><col style="width:13%"><col style="width:18%"><col style="width:19%"></colgroup>
+      <thead><tr><th>Vehicle</th><th>Driver</th><th>Vegetable</th><th>Quantity</th><th>Type</th><th>Time</th></tr></thead>
+      <tbody id="dispBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ACCOUNTS -->
+<div class="sec" id="s-accounts">
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-icon g"><i class="ti ti-trending-up" aria-hidden="true"></i></div><div class="kpi-val" id="aInc">₹0</div><div class="kpi-lbl">Total Income</div></div>
+    <div class="kpi"><div class="kpi-icon r"><i class="ti ti-trending-down" aria-hidden="true"></i></div><div class="kpi-val" id="aExp">₹0</div><div class="kpi-lbl">Total Expense</div></div>
+    <div class="kpi"><div class="kpi-icon a"><i class="ti ti-clock" aria-hidden="true"></i></div><div class="kpi-val" id="aPen">₹0</div><div class="kpi-lbl">Pending</div></div>
+    <div class="kpi"><div class="kpi-icon b"><i class="ti ti-wallet" aria-hidden="true"></i></div><div class="kpi-val" id="aProfit">₹0</div><div class="kpi-lbl">Net Profit</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><i class="ti ti-plus" aria-hidden="true"></i>Add Transaction</div>
+    </div>
+    <div class="card-body">
+      <div class="form-row">
+        <div><div class="lbl">Date</div><input id="aDate" type="date"></div>
+        <div><div class="lbl">Description</div><input id="aDesc" placeholder="Transaction description"></div>
+        <div><div class="lbl">Amount (₹)</div><input id="aAmt" type="number" value="0"></div>
+        <div><div class="lbl">Category</div><select id="aCat"><option value="income">Income</option><option value="expense">Expense</option><option value="pending">Pending</option></select></div>
+        <button class="btn-primary" onclick="addAccount()"><i class="ti ti-check" aria-hidden="true"></i>Add</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><i class="ti ti-receipt" aria-hidden="true"></i>Transaction History</div>
+    </div>
+    <table>
+      <colgroup><col style="width:15%"><col style="width:40%"><col style="width:18%"><col style="width:17%"><col style="width:10%"></colgroup>
+      <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Action</th></tr></thead>
+      <tbody id="accBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="sec" id="s-contact">
+  <div class="card">
+    <div class="card-body" style="padding:20px;">
+      <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+        <div class="owner-avatar">TK</div>
+        <div style="flex:1;min-width:200px;">
+          <h3 style="font-size:16px;color:var(--txt);margin-bottom:4px;">Tanuj Kumar</h3>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Owner & Proprietor</div>
+          <div class="contact-actions">
+            <a href="tel:+919460473101" class="callbtn"><i class="ti ti-phone" aria-hidden="true"></i>+91 9460473101</a>
+            <a href="tel:+918824789383" class="callbtn"><i class="ti ti-phone" aria-hidden="true"></i>+91 8824789383</a>
+            <a href="https://wa.me/919460473101" target="_blank" class="btn-wa"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i>WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <div class="divider" style="margin:18px 0;"></div>
+      <div style="display:grid;gap:0;">
+        <div class="info-row"><div class="info-key">Company Name</div><div class="info-val">Tanuj Trending Company</div></div>
+        <div class="info-row"><div class="info-key">Business Type</div><div class="info-val">Wholesale Vegetable Trading</div></div>
+        <div class="info-row"><div class="info-key">Location</div><div class="info-val">Jaipur, Rajasthan</div></div>
+        <div class="info-row"><div class="info-key">Operating Hours</div><div class="info-val">Mon-Sat: 6:00 AM - 8:00 PM</div></div>
+        <div class="info-row"><div class="info-key">Email</div><div class="info-val">tanuj.trending@example.com</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title"><i class="ti ti-map-pin" aria-hidden="true"></i>Warehouse Address</div>
+    </div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--txt);line-height:1.6;margin-bottom:12px;">
+        Sabzi Mandi, Near Grain Market<br>
+        Jaipur, Rajasthan - 302001<br>
+        India
+      </p>
+      <button class="btn-ghost" onclick="window.open('https://maps.google.com','_blank')"><i class="ti ti-map" aria-hidden="true"></i>Open in Google Maps</button>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+const vegs=[
+  {n:'Potato',t:800,s:620,l:80},
+  {n:'Onion',t:650,s:510,l:40},
+  {n:'Tomato',t:420,s:340,l:30},
+  {n:'Cabbage',t:380,s:290,l:45},
+  {n:'Cauliflower',t:320,s:240,l:35},
+  {n:'Carrot',t:280,s:210,l:25},
+  {n:'Green Chili',t:150,s:120,l:10},
+  {n:'Brinjal',t:200,s:160,l:15},
+];
+const dispatches=[
+  {v:'RJ-14-1234',d:'Ramesh Kumar',veg:'Potato',qty:500,type:'in',time:'08:00 AM'},
+  {v:'RJ-14-5678',d:'Suresh Verma',veg:'Onion',qty:400,type:'in',time:'08:30 AM'},
+  {v:'RJ-02-5678',d:'Suresh Kumar',veg:'Onion',qty:300,type:'out',time:'11:30 AM'},
+  {v:'RJ-45-9012',d:'Mohan Lal',veg:'Tomato',qty:200,type:'load',time:'02:00 PM'},
+];
+const accounts=[
+  {date:'2025-05-14',desc:'Sold potato — Ramesh Traders',cat:'income',amt:8500},
+  {date:'2025-05-14',desc:'Sold onion — Sharma Mandi',cat:'income',amt:4200},
+  {date:'2025-05-13',desc:'Transport charges',cat:'expense',amt:1200},
+  {date:'2025-05-13',desc:'Pending — Ravi Vegetables',cat:'pending',amt:3000},
+];
+
+function nav(btn,sec){
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('s-'+sec).classList.add('on');
+  if(sec==='inventory')renderInv();
+  if(sec==='dispatch')renderDisp();
+  if(sec==='accounts')renderAcc();
+}
+
+function rem(v){return Math.max(0,v.t-v.s-v.l);}
+function pct(v){return Math.round((v.s/v.t)*100);}
+
+function renderInv(){
+  const q=document.getElementById('vegSearch').value.toLowerCase();
+  const filt=vegs.filter(v=>v.n.toLowerCase().includes(q));
+  document.getElementById('vegCount').textContent=filt.length+' items';
+  document.getElementById('invBody').innerHTML=filt.map((v,i)=>{
+    const r=rem(v),p=pct(v);
+    const st=r<50?['br','Low Stock']:r<200?['ba','Moderate']:['bg','In Stock'];
+    return`<tr>
+      <td style="font-weight:500;">${v.n}</td>
+      <td>${v.t.toLocaleString()} kg</td>
+      <td>${v.s.toLocaleString()} kg</td>
+      <td>${r.toLocaleString()} kg</td>
+      <td>${v.l.toLocaleString()} kg</td>
+      <td><span class="badge ${st[0]}">${st[1]}</span></td>
+      <td><button class="btn-danger" onclick="delVeg(${vegs.indexOf(v)})" aria-label="Delete"><i class="ti ti-trash" aria-hidden="true"></i></button></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderOverview(){
+  document.getElementById('overviewTb').innerHTML=vegs.slice(0,6).map(v=>{
+    const p=pct(v);
+    const cl=p>70?'#166534':p>40?'#d97706':'#dc2626';
+    return`<tr>
+      <td style="font-weight:500;">${v.n}</td>
+      <td>${v.t.toLocaleString()} kg</td>
+      <td>${v.s.toLocaleString()} kg</td>
+      <td><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">${p}% sold</div><div class="bar-wrap"><div class="bar-fill" style="width:${p}%;background:${cl};"></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function toggleAddForm(){
+  const f=document.getElementById('addForm');
+  f.style.display=f.style.display==='none'?'block':'none';
+}
+function addVeg(){
+  const nm=document.getElementById('nName').value.trim();
+  if(!nm)return alert('Please enter vegetable name');
+  vegs.push({n:nm,t:parseInt(document.getElementById('nTotal').value)||0,s:parseInt(document.getElementById('nSold').value)||0,l:parseInt(document.getElementById('nLoaded').value)||0});
+  toggleAddForm();renderInv();
+}
+function delVeg(i){if(confirm('Remove this vegetable?')){vegs.splice(i,1);renderInv();}}
+
+function calcDisp(){
+  let a=0,b=0,l=0;
+  dispatches.forEach(d=>{if(d.type==='in')a+=d.qty;else if(d.type==='out')b+=d.qty;else l+=d.qty;});
+  document.getElementById('dAaya').textContent=a.toLocaleString()+' kg';
+  document.getElementById('dBheja').textContent=b.toLocaleString()+' kg';
+  document.getElementById('dLoaded').textContent=l.toLocaleString()+' kg';
+  document.getElementById('dBacha').textContent=Math.max(0,a-b-l).toLocaleString()+' kg';
+}
+function renderDisp(){
+  calcDisp();
+  const typeMap={in:['bg','Received'],out:['bb','Dispatched'],load:['ba','Loaded']};
+  document.getElementById('dispBody').innerHTML=dispatches.map(d=>{
+    const m=typeMap[d.type];
+    return`<tr><td>${d.v}</td><td>${d.d}</td><td>${d.veg}</td><td>${d.qty.toLocaleString()} kg</td><td><span class="badge ${m[0]}">${m[1]}</span></td><td style="color:var(--muted);font-size:11px;">${d.time}</td></tr>`;
+  }).join('');
+}
+function addDispatch(){
+  const v=document.getElementById('dVehicle').value||'—';
+  const d=document.getElementById('dDriver').value||'—';
+  const vg=document.getElementById('dVeg').value||'—';
+  const q=parseInt(document.getElementById('dQty').value)||0;
+  const t=document.getElementById('dType').value;
+  const now=new Date();
+  dispatches.unshift({v,d,veg:vg,qty:q,type:t,time:now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})});
+  renderDisp();
+}
+
+function calcAcc(){
+  let inc=0,exp=0,pen=0;
+  accounts.forEach(a=>{if(a.cat==='income')inc+=a.amt;else if(a.cat==='expense')exp+=a.amt;else pen+=a.amt;});
+  document.getElementById('aInc').textContent='₹'+inc.toLocaleString();
+  document.getElementById('aExp').textContent='₹'+exp.toLocaleString();
+  document.getElementById('aPen').textContent='₹'+pen.toLocaleString();
+  document.getElementById('aProfit').textContent='₹'+(inc-exp).toLocaleString();
+}
+function renderAcc(){
+  calcAcc();
+  const catMap={income:['bg','Income'],expense:['br','Expense'],pending:['ba','Pending']};
+  document.getElementById('accBody').innerHTML=accounts.map((a,i)=>{
+    const m=catMap[a.cat];
+    return`<tr><td style="color:var(--muted);font-size:11px;">${a.date}</td><td>${a.desc}</td><td><span class="badge ${m[0]}">${m[1]}</span></td><td style="font-weight:500;">₹${a.amt.toLocaleString()}</td><td><button class="btn-danger" onclick="delAcc(${i})"><i class="ti ti-trash" aria-hidden="true"></i></button></td></tr>`;
+  }).join('');
+}
+function addAccount(){
+  const d=document.getElementById('aDesc').value.trim();
+  const a=parseInt(document.getElementById('aAmt').value)||0;
+  const c=document.getElementById('aCat').value;
+  const dt=document.getElementById('aDate').value||new Date().toISOString().slice(0,10);
+  if(!d||!a)return alert('Please fill description and amount');
+  accounts.unshift({date:dt,desc:d,cat:c,amt:a});
+  renderAcc();
+}
+function delAcc(i){accounts.splice(i,1);renderAcc();}
+
+renderOverview();
+
+new Chart(document.getElementById('wkChart'),{
+  type:'bar',
+  data:{
+    labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    datasets:[{
+      label:'Revenue (₹)',
+      data:[9800,12400,8600,15200,11000,13800,12400],
+      backgroundColor:'#166534',
+      borderRadius:4,
+      borderSkipped:false,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'₹'+c.raw.toLocaleString()}}},
+    scales:{
+      y:{ticks:{callback:v=>'₹'+v.toLocaleString(),font:{size:10},color:'#888780'},grid:{color:'rgba(0,0,0,0.04)'},border:{display:false}},
+      x:{ticks:{font:{size:10},color:'#888780'},grid:{display:false},border:{display:false}}
+    }
+  }
+});
+
+document.getElementById('aDate').valueAsDate=new Date();
+</script>
+
+</body>
+</html>
